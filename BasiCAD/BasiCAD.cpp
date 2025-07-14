@@ -104,8 +104,11 @@ void BasiCAD::Update()
 		addCylinder();
 	if (input->KeyPress('S'))
 		addSphere();
-	if (input->KeyPress('G'))
+	if (input->KeyPress('P'))
 		addGrid();
+	if (input->KeyPress('G'))
+		addObj(&geoSphere);
+
 	if (input->KeyPress(VK_DELETE))
 		removeObject();
 

@@ -66,6 +66,7 @@ private:
     Cylinder cylinder = Cylinder(1.0f, 0.5f, 2.0f, 20, 20, SELECTED_COLOR);
     Sphere sphere = Sphere(1.0f, 20, 20, SELECTED_COLOR);
     Grid grid = Grid(1.0f, 1.0f, 20, 20, SELECTED_COLOR);
+	GeoSphere geoSphere = GeoSphere(1.0f, 3, SELECTED_COLOR);
 
 	uint selectedObject = 1; // índice do objeto selecionado
 public:
@@ -85,6 +86,7 @@ public:
     void inline addCylinder() { addObj(&cylinder); }
     void inline addSphere() { addObj(&sphere); }
     void inline addGrid() { addObj(&grid); }
+	void inline addGeoSphere() { addObj(&geoSphere); }
 
     void removeObject();
 
