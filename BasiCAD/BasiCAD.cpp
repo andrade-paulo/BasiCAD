@@ -133,50 +133,52 @@ void BasiCAD::Update()
 		);
 	}
 
+    double timeDelta = gameTime * 30;
+
 	if (input->KeyDown(VK_SHIFT)) {
         // Rotação
 		auto& obj = scene[selectedObject];
-		float angle = XMConvertToRadians(1.0f); // ângulo de rotação em radianos
+		float angle = XMConvertToRadians(2.0f); // ângulo de rotação em radianos
 
         // Eixo X
-        if (input->KeyPress(VK_LEFT)) {
+        if (input->KeyDown(VK_LEFT)) {
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationY(-angle))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationY(-angle * timeDelta))
             );
         }
-        if (input->KeyPress(VK_UP)) {
+        if (input->KeyDown(VK_UP)) {
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationX(angle))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationX(angle * timeDelta))
             );
         }
 
         // Eixo Y
-        if (input->KeyPress(VK_RIGHT)) {
+        if (input->KeyDown(VK_RIGHT)) {
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationY(angle))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationY(angle * timeDelta))
             );
         }
-		if (input->KeyPress(VK_DOWN)) {
+		if (input->KeyDown(VK_DOWN)) {
 			XMStoreFloat4x4(
 				&obj.world,
-				XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationX(-angle))
+				XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationX(-angle * timeDelta))
 			);
 		}
 
         // Eixo Z
-		if (input->KeyPress(VK_OEM_6)) {  // tecla '['
+		if (input->KeyDown(VK_OEM_6)) {  // tecla '['
 			XMStoreFloat4x4(
 				&obj.world,
-				XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationZ(angle))
+				XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationZ(angle * timeDelta))
 			);
 		}
-        if (input->KeyPress(VK_OEM_5)) {  // tecla ']'
+        if (input->KeyDown(VK_OEM_5)) {  // tecla ']'
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationZ(-angle))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationZ(-angle * timeDelta))
             );
         }
     }
@@ -184,53 +186,53 @@ void BasiCAD::Update()
         // Translação
         
         // Eixo X
-        if (input->KeyPress(VK_RIGHT)) {
+        if (input->KeyDown(VK_RIGHT)) {
             auto& obj = scene[selectedObject];
             XMStoreFloat4x4(
                 &obj.world,
-                XMLoadFloat4x4(&obj.world) * XMMatrixTranslation(-MOVEMENT_PACE, 0.0f, 0.0f)
+                XMLoadFloat4x4(&obj.world) * XMMatrixTranslation(-MOVEMENT_PACE * timeDelta, 0.0f, 0.0f)
             );
         }
 
-        if (input->KeyPress(VK_LEFT)) {
+        if (input->KeyDown(VK_LEFT)) {
             auto& obj = scene[selectedObject];
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(MOVEMENT_PACE, 0.0f, 0.0f))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(MOVEMENT_PACE * timeDelta, 0.0f, 0.0f))
             );
         }
 
         // Eixo Z
-        if (input->KeyPress(VK_UP)) {
+        if (input->KeyDown(VK_UP)) {
             auto& obj = scene[selectedObject];
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, 0.0f, -MOVEMENT_PACE))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, 0.0f, -MOVEMENT_PACE * timeDelta))
             );
         }
 
-        if (input->KeyPress(VK_DOWN)) {
+        if (input->KeyDown(VK_DOWN)) {
             auto& obj = scene[selectedObject];
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, 0.0f, MOVEMENT_PACE))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, 0.0f, MOVEMENT_PACE * timeDelta))
             );
         }
 
         // Eixo Y
-        if (input->KeyPress(VK_OEM_6)) {  // tecla '['
+        if (input->KeyDown(VK_OEM_6)) {  // tecla '['
             auto& obj = scene[selectedObject];
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, MOVEMENT_PACE, 0.0f))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, MOVEMENT_PACE * timeDelta, 0.0f))
             );
         }
 
-        if (input->KeyPress(VK_OEM_5)) {  // tecla ']'
+        if (input->KeyDown(VK_OEM_5)) {  // tecla ']'
             auto& obj = scene[selectedObject];
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, -MOVEMENT_PACE, 0.0f))
+                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixTranslation(0.0f, -MOVEMENT_PACE * timeDelta, 0.0f))
             );
         }
     }

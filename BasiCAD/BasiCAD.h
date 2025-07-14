@@ -89,6 +89,8 @@ public:
     void removeObject();
 
     void changeColor(uint index, XMFLOAT4 color);
+
+    double& gameTime = Engine::frameTime;
 };
 
 // ------------------------------------------------------------------------------
