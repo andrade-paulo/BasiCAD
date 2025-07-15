@@ -63,6 +63,9 @@
     <ClCompile Include="BasiCAD.cpp">
       <Filter>App\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Commands.cpp">
+      <Filter>App\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">

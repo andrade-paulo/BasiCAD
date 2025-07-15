@@ -219,6 +219,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Commands.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="BasiCAD.cpp" />
     <ClCompile Include="Engine.cpp" />

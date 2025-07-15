@@ -59,7 +59,6 @@ private:
     D3D12_VIEWPORT viewportFront;
     D3D12_VIEWPORT viewportDivider;
     
-
 	// Vertices para os divisores de viewport
     VertexBuffer<Vertex>* viewportDividerBuffer = nullptr;
 	ConstantBuffer<Constants>* viewportDividerCBuffer = nullptr;
@@ -87,7 +86,7 @@ private:
     // Cores
     const XMFLOAT4 DEFAULT_COLOR = Gray;
     const XMFLOAT4 SELECTED_COLOR = Crimson;
-    const float MOVEMENT_PACE = 0.1;
+    const float MOVEMENT_PACE = 0.1f;
 
 	// Objetos 3D
     Box box = Box(1.0f, 1.0f, 1.0f, SELECTED_COLOR);
@@ -99,6 +98,7 @@ private:
     // Variáveis de controle
 	uint selectedObject = 1; // índice do objeto selecionado
 	bool multipleView = false; // modo de visualização múltipla
+
 public:
     void Init();
     void Update();
@@ -110,6 +110,8 @@ public:
 
     void BuildRootSignature();
     void BuildPipelineState();
+
+	void processInput();
 
     void addObj(Geometry* geo);
     void inline addBox() { addObj(&box); }
