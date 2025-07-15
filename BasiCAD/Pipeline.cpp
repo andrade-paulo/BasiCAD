@@ -151,6 +151,11 @@ void BasiCAD::BuildPipelineState()
     pso.SampleDesc.Quality = graphics->Quality();
     graphics->Device()->CreateGraphicsPipelineState(&pso, IID_PPV_ARGS(&pipelineState));
 
+    rasterizer.CullMode = D3D12_CULL_MODE_NONE;
+    pso.RasterizerState = rasterizer;
+    pso.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+    graphics->Device()->CreateGraphicsPipelineState(&pso, IID_PPV_ARGS(&pipelineStateLine));
+
     vertexShader->Release();
     pixelShader->Release();
 }

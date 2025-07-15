@@ -88,6 +88,18 @@ void BasiCAD::Init()
 	viewportPerspective.Height = float(window->Height() / 2.0f);
 	viewportPerspective.MinDepth = 0.0f;
 	viewportPerspective.MaxDepth = 1.0f;
+
+	// viewport de divisores
+	viewportDivider.TopLeftX = 0.0f;
+	viewportDivider.TopLeftY = 0.0f;
+	viewportDivider.Width = float(window->Width());
+	viewportDivider.Height = float(window->Height());
+	viewportDivider.MinDepth = 0.0f;
+	viewportDivider.MaxDepth = 1.0f;
+
+	// cria o vbuffer e cbuffer para os divisores de viewport
+	viewportDividerBuffer = new VertexBuffer<Vertex>(viewportDividerVertices, VERTICAL_DIVIDER);
+    viewportDividerCBuffer = new ConstantBuffer<Constants>();
  
     // ---------------------
 
@@ -282,6 +294,8 @@ void BasiCAD::Update()
 		XMVECTOR upRight = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 		XMMATRIX viewRightMatrix = XMMatrixLookAtLH(posRight, target, upRight);
 
+        Constants constants;
+
         for (auto& obj : scene)
         {
             // carrega matriz de mundo
@@ -292,9 +306,6 @@ void BasiCAD::Update()
 			XMMATRIX WorldViewProjFront = world * viewFrontMatrix * projOrtographic;
 			XMMATRIX WorldViewProjTop = world * viewTopMatrix * projOrtographic;
 			XMMATRIX WorldViewProjRight = world * viewRightMatrix * projOrtographic;
-
-            // atualiza o buffer constante com a matriz combinada
-            Constants constants;
 
 			// insere no buffer cada matriz combinada
             XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProjPerspective));
@@ -309,6 +320,9 @@ void BasiCAD::Update()
 			XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProjRight));
 			obj.cbufferRight->Copy(&constants);
         }
+
+        XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixIdentity());
+        viewportDividerCBuffer->Copy(&constants);
     }
     else {
         // ajusta o constant buffer de cada objeto
@@ -358,6 +372,18 @@ void BasiCAD::Draw()
                 graphics->CommandList()->DrawIndexedInstanced(obj.mesh->indexCount, 1, obj.mesh->startIndex, obj.mesh->baseVertex, 0);
 			}
         }
+
+		// configura pipeline e viewport para as linhas de divisão
+		graphics->CommandList()->RSSetViewports(1, &viewportDivider);
+		graphics->CommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+
+        graphics->CommandList()->SetPipelineState(pipelineStateLine);
+
+        // desenho das divisórias
+		graphics->CommandList()->SetGraphicsRootConstantBufferView(0, viewportDividerCBuffer->View());
+		graphics->CommandList()->IASetVertexBuffers(0, 1, viewportDividerBuffer->View());
+		graphics->CommandList()->DrawInstanced(VERTICAL_DIVIDER, 1, 0, 0);
+
     }
     else {
         // desenha objetos da cena
@@ -373,7 +399,8 @@ void BasiCAD::Draw()
                 obj.mesh->indexCount, 1,
                 obj.mesh->startIndex,
                 obj.mesh->baseVertex,
-                0);
+                0
+            );
         }
     }
     
@@ -391,6 +418,7 @@ void BasiCAD::Finalize()
     // libera memória alocada
     rootSignature->Release();
     pipelineState->Release();
+	pipelineStateLine->Release();
 
     for (auto& obj : scene)
     {
