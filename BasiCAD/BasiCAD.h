@@ -33,7 +33,11 @@ struct Object
     Mesh* mesh = nullptr;
     VertexBuffer<Vertex>* vbuffer = nullptr;
     IndexBuffer<uint>* ibuffer = nullptr;
-    ConstantBuffer<Constants>* cbuffer = nullptr;
+
+    ConstantBuffer<Constants>* cbufferPerspective = nullptr;
+	ConstantBuffer<Constants>* cbufferFront = nullptr;
+	ConstantBuffer<Constants>* cbufferTop = nullptr;
+	ConstantBuffer<Constants>* cbufferRight = nullptr;
 
     Vertex* vertices = nullptr;
 	uint vertexCount = 0;
@@ -47,15 +51,17 @@ private:
     ID3D12RootSignature* rootSignature = nullptr;
     ID3D12PipelineState* pipelineState = nullptr;
 
-    D3D12_VIEWPORT viewFront;
-    D3D12_VIEWPORT viewTop;
-    D3D12_VIEWPORT viewRight;
-    D3D12_VIEWPORT viewPerspective;
+    // Viewports
+    D3D12_VIEWPORT viewportPerspective;
+    D3D12_VIEWPORT viewportTop;
+    D3D12_VIEWPORT viewportRight;
+    D3D12_VIEWPORT viewportFront;
+    
+    XMFLOAT4X4 ProjPerspective;
+	XMFLOAT4X4 ProjOrtographic;
     
     OrbitCamera camera;
-    XMFLOAT4X4 Proj;
     static Timer timer;
-    
     vector<Object> scene;
 
     const XMFLOAT4 DEFAULT_COLOR = Gray;
@@ -69,6 +75,7 @@ private:
 	GeoSphere geoSphere = GeoSphere(1.0f, 3, SELECTED_COLOR);
 
 	uint selectedObject = 1; // índice do objeto selecionado
+	bool multipleView = false; // modo de visualização múltipla
 public:
     void Init();
     void Update();

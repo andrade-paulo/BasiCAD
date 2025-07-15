@@ -23,10 +23,20 @@ void BasiCAD::Init()
     camera = { XM_PIDIV2, XM_PIDIV4, 5.0f };
 
     // inicializa a matriz de projeção
-    XMStoreFloat4x4(&Proj, XMMatrixPerspectiveFovLH(
+    XMStoreFloat4x4(&ProjPerspective, 
+        XMMatrixPerspectiveFovLH(
         XMConvertToRadians(45.0f), 
         window->AspectRatio(), 
-        1.0f, 100.0f));
+        1.0f, 100.0f)
+    );
+
+	float ortographicHeight = 5.0f;
+	float ortographicWidth = ortographicHeight * window->AspectRatio();
+
+	XMStoreFloat4x4(&ProjOrtographic, 
+        XMMatrixOrthographicLH(
+		ortographicWidth, ortographicHeight, 1.0f, 100.0f)
+    );
 
     // -------------------------
     // Definição dos Objetos 3D
@@ -48,36 +58,36 @@ void BasiCAD::Init()
     // ------------------
 
     // frente
-    viewFront.TopLeftX = 0.0f;
-    viewFront.TopLeftY = 0.0f;
-    viewFront.Width = float(window->Width() / 2.0f);
-    viewFront.Height = float(window->Height() / 2.0f);
-    viewFront.MinDepth = 0.0f;
-    viewFront.MaxDepth = 1.0f;
+    viewportFront.TopLeftX = 0.0f;
+    viewportFront.TopLeftY = 0.0f;
+    viewportFront.Width = float(window->Width() / 2.0f);
+    viewportFront.Height = float(window->Height() / 2.0f);
+    viewportFront.MinDepth = 0.0f;
+    viewportFront.MaxDepth = 1.0f;
 
     // lado direito
-    viewRight.TopLeftX = float(window->Width() / 2.0f);
-    viewRight.TopLeftY = 0.0f;
-    viewRight.Width = float(window->Width() / 2.0f);
-    viewRight.Height = float(window->Height() / 2.0f);
-    viewRight.MinDepth = 0.0f;
-    viewRight.MaxDepth = 1.0f;
+    viewportRight.TopLeftX = float(window->Width() / 2.0f);
+    viewportRight.TopLeftY = 0.0f;
+    viewportRight.Width = float(window->Width() / 2.0f);
+    viewportRight.Height = float(window->Height() / 2.0f);
+    viewportRight.MinDepth = 0.0f;
+    viewportRight.MaxDepth = 1.0f;
 
 	// topo
-	viewTop.TopLeftX = 0.0f;
-	viewTop.TopLeftY = float(window->Height() / 2.0f);
-	viewTop.Width = float(window->Width() / 2.0f);
-	viewTop.Height = float(window->Height() / 2.0f);
-	viewTop.MinDepth = 0.0f;
-	viewTop.MaxDepth = 1.0f;
+	viewportTop.TopLeftX = 0.0f;
+	viewportTop.TopLeftY = float(window->Height() / 2.0f);
+	viewportTop.Width = float(window->Width() / 2.0f);
+	viewportTop.Height = float(window->Height() / 2.0f);
+	viewportTop.MinDepth = 0.0f;
+	viewportTop.MaxDepth = 1.0f;
 
 	// perspectiva
-	viewPerspective.TopLeftX = float(window->Width() / 2.0f);
-	viewPerspective.TopLeftY = float(window->Height() / 2.0f);
-	viewPerspective.Width = float(window->Width() / 2.0f);
-	viewPerspective.Height = float(window->Height() / 2.0f);
-	viewPerspective.MinDepth = 0.0f;
-	viewPerspective.MaxDepth = 1.0f;
+	viewportPerspective.TopLeftX = float(window->Width() / 2.0f);
+	viewportPerspective.TopLeftY = float(window->Height() / 2.0f);
+	viewportPerspective.Width = float(window->Width() / 2.0f);
+	viewportPerspective.Height = float(window->Height() / 2.0f);
+	viewportPerspective.MinDepth = 0.0f;
+	viewportPerspective.MaxDepth = 1.0f;
  
     // ---------------------
 
@@ -97,6 +107,9 @@ void BasiCAD::Update()
 
     if (input->KeyPress(VK_ESCAPE))
         window->Close();
+
+    if (input->KeyPress('V'))
+		multipleView = !multipleView; // alterna entre visualização única e múltipla
 
     if (input->KeyPress('B'))
 		addBox();
@@ -240,32 +253,78 @@ void BasiCAD::Update()
         }
     }
 
-
     // atualiza posição da câmera
     camera.Update();
 
     // constrói a matriz de visualização
-    XMVECTOR pos = XMVectorSet(camera.x, camera.y, camera.z, 1.0f);
     XMVECTOR target = XMVectorZero();
-    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
+
+    XMVECTOR posPerspective = XMVectorSet(camera.x, camera.y, camera.z, 1.0f);
+    XMVECTOR upPerspective = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    XMMATRIX viewPerspective = XMMatrixLookAtLH(posPerspective, target, upPerspective);
 
     // carrega matriz de projeção
-    XMMATRIX proj = XMLoadFloat4x4(&Proj);
+    XMMATRIX projPerspective = XMLoadFloat4x4(&ProjPerspective);
 
-    // ajusta o constant buffer de cada objeto
-    for (auto & obj : scene)
-    {
-        // carrega matriz de mundo
-        XMMATRIX world = XMLoadFloat4x4(&obj.world);      
+    if (multipleView) {
+		XMMATRIX projOrtographic = XMLoadFloat4x4(&ProjOrtographic);
+        
+		// Visualização para as outras vistas
+		XMVECTOR posFront = XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f);
+		XMVECTOR upFront = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		XMMATRIX viewFrontMatrix = XMMatrixLookAtLH(posFront, target, upFront);
 
-        // constrói matriz combinada
-        XMMATRIX WorldViewProj = world * view * proj;        
+		XMVECTOR posTop = XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f);
+		XMVECTOR upTop = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+		XMMATRIX viewTopMatrix = XMMatrixLookAtLH(posTop, target, upTop);
+        
+		XMVECTOR posRight = XMVectorSet(5.0f, 0.0f, 0.0f, 1.0f);
+		XMVECTOR upRight = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		XMMATRIX viewRightMatrix = XMMatrixLookAtLH(posRight, target, upRight);
 
-        // atualiza o buffer constante com a matriz combinada
-        Constants constants;
-        XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProj));
-        obj.cbuffer->Copy(&constants);
+        for (auto& obj : scene)
+        {
+            // carrega matriz de mundo
+            XMMATRIX world = XMLoadFloat4x4(&obj.world);
+
+            // constrói matriz combinada
+            XMMATRIX WorldViewProjPerspective = world * viewPerspective * projPerspective;
+			XMMATRIX WorldViewProjFront = world * viewFrontMatrix * projOrtographic;
+			XMMATRIX WorldViewProjTop = world * viewTopMatrix * projOrtographic;
+			XMMATRIX WorldViewProjRight = world * viewRightMatrix * projOrtographic;
+
+            // atualiza o buffer constante com a matriz combinada
+            Constants constants;
+
+			// insere no buffer cada matriz combinada
+            XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProjPerspective));
+            obj.cbufferPerspective->Copy(&constants);
+
+            XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProjFront));
+			obj.cbufferFront->Copy(&constants);
+            
+			XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProjTop));
+			obj.cbufferTop->Copy(&constants);
+            
+			XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProjRight));
+			obj.cbufferRight->Copy(&constants);
+        }
+    }
+    else {
+        // ajusta o constant buffer de cada objeto
+        for (auto& obj : scene)
+        {
+            // carrega matriz de mundo
+            XMMATRIX world = XMLoadFloat4x4(&obj.world);
+
+            // constrói matriz combinada
+            XMMATRIX WorldViewProj = world * viewPerspective * projPerspective;
+
+            // atualiza o buffer constante com a matriz combinada
+            Constants constants;
+            XMStoreFloat4x4(&constants.WorldViewProj, XMMatrixTranspose(WorldViewProj));
+            obj.cbufferPerspective->Copy(&constants);
+        }
     }
 }
 
@@ -280,21 +339,42 @@ void BasiCAD::Draw()
     graphics->CommandList()->SetPipelineState(pipelineState);
     graphics->CommandList()->SetGraphicsRootSignature(rootSignature);
     graphics->CommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    
-    // desenha objetos da cena
-    for (auto& obj : scene)
-    {
-        // comandos de configuração específicos a cada objeto
-        graphics->CommandList()->SetGraphicsRootConstantBufferView(0, obj.cbuffer->View());
-        graphics->CommandList()->IASetVertexBuffers(0, 1, obj.vbuffer->View());
-        graphics->CommandList()->IASetIndexBuffer(obj.ibuffer->View());
 
-        // desenha objeto
-        graphics->CommandList()->DrawIndexedInstanced(
-            obj.mesh->indexCount, 1,
-            obj.mesh->startIndex,
-            obj.mesh->baseVertex,
-            0);
+    if (multipleView) {
+		D3D12_VIEWPORT viewports[] = { viewportPerspective, viewportFront, viewportTop, viewportRight };
+
+		// desenha objetos da cena para cada viewport
+        for (auto& obj : scene)
+        {
+            D3D12_GPU_VIRTUAL_ADDRESS views[] = { obj.cbufferPerspective->View(), obj.cbufferFront->View(), obj.cbufferTop->View(), obj.cbufferRight->View() };
+
+			for (size_t i = 0; i < 4; ++i) {
+				// define a viewport atual
+				graphics->CommandList()->RSSetViewports(1, &viewports[i]);
+				graphics->CommandList()->SetGraphicsRootConstantBufferView(0, views[i]);
+
+                graphics->CommandList()->IASetVertexBuffers(0, 1, obj.vbuffer->View());
+                graphics->CommandList()->IASetIndexBuffer(obj.ibuffer->View());
+                graphics->CommandList()->DrawIndexedInstanced(obj.mesh->indexCount, 1, obj.mesh->startIndex, obj.mesh->baseVertex, 0);
+			}
+        }
+    }
+    else {
+        // desenha objetos da cena
+        for (auto& obj : scene)
+        {
+            // comandos de configuração específicos a cada objeto
+            graphics->CommandList()->SetGraphicsRootConstantBufferView(0, obj.cbufferPerspective->View());
+            graphics->CommandList()->IASetVertexBuffers(0, 1, obj.vbuffer->View());
+            graphics->CommandList()->IASetIndexBuffer(obj.ibuffer->View());
+
+            // desenha objeto
+            graphics->CommandList()->DrawIndexedInstanced(
+                obj.mesh->indexCount, 1,
+                obj.mesh->startIndex,
+                obj.mesh->baseVertex,
+                0);
+        }
     }
     
     // apresenta o backbuffer na tela
@@ -317,7 +397,10 @@ void BasiCAD::Finalize()
         delete obj.mesh;
         delete obj.vbuffer;
         delete obj.ibuffer;
-        delete obj.cbuffer;
+        delete obj.cbufferPerspective;
+		delete obj.cbufferFront;
+		delete obj.cbufferTop;
+		delete obj.cbufferRight;
     }
 }
 
@@ -330,7 +413,11 @@ void BasiCAD::addObj(Geometry* geo) {
 	obj.mesh = new Mesh(*geo);
     obj.vbuffer = new VertexBuffer<Vertex>(*geo);
     obj.ibuffer = new IndexBuffer<uint>(*geo);
-    obj.cbuffer = new ConstantBuffer<Constants>();
+
+    obj.cbufferPerspective = new ConstantBuffer<Constants>();
+	obj.cbufferFront = new ConstantBuffer<Constants>();
+	obj.cbufferTop = new ConstantBuffer<Constants>();
+	obj.cbufferRight = new ConstantBuffer<Constants>();
 
     obj.vertices = geo->vertices.data();
     obj.vertexCount = geo->VertexCount();
