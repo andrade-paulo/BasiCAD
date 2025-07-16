@@ -30,7 +30,7 @@ void BasiCAD::Init()
         1.0f, 100.0f)
     );
 
-	float ortographicHeight = 5.0f;
+	float ortographicHeight = 10.0f;
 	float ortographicWidth = ortographicHeight * window->AspectRatio();
 
 	XMStoreFloat4x4(&ProjOrtographic, 
@@ -139,7 +139,7 @@ void BasiCAD::Update()
 		XMMATRIX viewFrontMatrix = XMMatrixLookAtLH(posFront, target, upFront);
 
 		XMVECTOR posTop = XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f);
-		XMVECTOR upTop = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+		XMVECTOR upTop = XMVectorSet(0.0f, 1.0f, -1.0f, 0.0f);
 		XMMATRIX viewTopMatrix = XMMatrixLookAtLH(posTop, target, upTop);
         
 		XMVECTOR posRight = XMVectorSet(5.0f, 0.0f, 0.0f, 1.0f);

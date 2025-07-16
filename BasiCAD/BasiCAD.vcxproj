@@ -226,6 +226,7 @@
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="ObjRead.cpp" />
     <ClCompile Include="Pipeline.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Window.cpp" />

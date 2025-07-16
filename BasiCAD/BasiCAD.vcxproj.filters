@@ -66,6 +66,9 @@
     <ClCompile Include="Commands.cpp">
       <Filter>App\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObjRead.cpp">
+      <Filter>App\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">

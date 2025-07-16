@@ -1,11 +1,54 @@
 #include "BasiCAD.h"
 
 
+void showInstructions() {
+    std::string helpText =
+        "--- CONTROLES GERAIS ---\n"
+        "H: Mostra esta janela de ajuda.\n"
+        "V: Alterna entre visão única e múltipla.\n"
+        "ESC: Fecha a aplicação.\n"
+        "\n"
+        "--- CRIAÇÃO DE OBJETOS ---\n"
+        "B: Adiciona um Cubo (Box).\n"
+        "C: Adiciona um Cilindro.\n"
+        "S: Adiciona uma Esfera.\n"
+        "P: Adiciona uma Grade (Grid).\n"
+        "G: Adiciona uma Geo-Esfera.\n"
+        "1 - 5: Carrega modelos .obj da pasta Resources.\n"
+        "\n"
+        "--- MANIPULAÇÃO DE OBJETOS ---\n"
+        "TAB: Seleciona o próximo objeto.\n"
+        "DELETE: Remove o objeto selecionado.\n"
+        "\n"
+        "--- TRANSFORMAÇÕES ---\n\n"
+        "MOVER (TRANSLATE):\n"
+        "Setas Cima/Baixo: Move na profundidade (Z).\n"
+        "Setas Esq/Dir: Move lateralmente (X).\n"
+        "[: Move para cima (Y).\n"
+        "]: Move para baixo (Y).\n"
+        "\n"
+        "GIRAR (ROTATE):\n"
+        "SHIFT + Setas Cima/Baixo: Gira no eixo X.\n"
+        "SHIFT + Setas Esq/Dir: Gira no eixo Y.\n"
+        "SHIFT + [: Gira no eixo Z (sentido horário).\n"
+        "SHIFT + ]: Gira no eixo Z (sentido anti-horário).\n"
+        "\n"
+        "ESCALA (SCALE):\n"
+        "+: Aumenta o tamanho do objeto.\n"
+        "-: Diminui o tamanho do objeto.\n";
+
+    MessageBox(nullptr, helpText.c_str(), "Comandos - BasiCAD", MB_OK | MB_ICONINFORMATION);
+}
+
+
 void BasiCAD::processInput() {
     // Mapeamento das teclas de comando
-
     if (input->KeyPress(VK_ESCAPE))
         window->Close();
+
+	if (input->KeyPress('H')) {
+		showInstructions(); // exibe a janela de ajuda
+	}
 
     if (input->KeyPress('V'))
         multipleView = !multipleView; // alterna entre visualização única e múltipla
@@ -20,6 +63,19 @@ void BasiCAD::processInput() {
         addGrid();
     if (input->KeyPress('G'))
         addObj(&geoSphere);
+
+    if (input->KeyPress('1'))
+        loadObjFile("Resources/ball.obj");
+	if (input->KeyPress('2'))
+		loadObjFile("Resources/capsule.obj");
+	if (input->KeyPress('3'))
+		loadObjFile("Resources/house.obj");
+	if (input->KeyPress('4'))
+		loadObjFile("Resources/monkey.obj");
+	if (input->KeyPress('5'))
+		loadObjFile("Resources/thorus.obj");
+	if (input->KeyPress('6'))
+		loadObjFile("Resources/pegazuls.obj");
 
     if (input->KeyPress(VK_DELETE))
         removeObject();

@@ -10,6 +10,7 @@
 **********************************************************************************/
 
 #include "DXUT.h"
+#include <memory>
 
 // ------------------------------------------------------------------------------
 
@@ -95,6 +96,9 @@ private:
     Grid grid = Grid(1.0f, 1.0f, 20, 20, SELECTED_COLOR);
 	GeoSphere geoSphere = GeoSphere(1.0f, 3, SELECTED_COLOR);
 
+    // Geometrias carregadas de arquivos .obj
+    std::vector<std::unique_ptr<Geometry>> loadedGeometries;
+
     // Variáveis de controle
 	uint selectedObject = 1; // índice do objeto selecionado
 	bool multipleView = false; // modo de visualização múltipla
@@ -119,6 +123,7 @@ public:
     void inline addSphere() { addObj(&sphere); }
     void inline addGrid() { addObj(&grid); }
 	void inline addGeoSphere() { addObj(&geoSphere); }
+    void loadObjFile(const std::string& filename);
 
     void removeObject();
 
