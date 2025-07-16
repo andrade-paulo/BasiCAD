@@ -115,27 +115,27 @@ void BasiCAD::processInput() {
         if (input->KeyDown(VK_LEFT)) {
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationY(-angle * timeDelta))
+                XMMatrixMultiply(XMMatrixRotationY(-angle * timeDelta), XMLoadFloat4x4(&obj.world))
             );
         }
-        if (input->KeyDown(VK_UP)) {
+        if (input->KeyDown(VK_RIGHT)) {
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationX(angle * timeDelta))
+                XMMatrixMultiply(XMMatrixRotationY(angle * timeDelta), XMLoadFloat4x4(&obj.world))
             );
         }
 
         // Eixo Y
-        if (input->KeyDown(VK_RIGHT)) {
+        if (input->KeyDown(VK_UP)) {
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationY(angle * timeDelta))
+                XMMatrixMultiply(XMMatrixRotationX(angle * timeDelta), XMLoadFloat4x4(&obj.world))
             );
         }
         if (input->KeyDown(VK_DOWN)) {
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationX(-angle * timeDelta))
+                XMMatrixMultiply(XMMatrixRotationX(-angle * timeDelta), XMLoadFloat4x4(&obj.world))
             );
         }
 
@@ -143,13 +143,13 @@ void BasiCAD::processInput() {
         if (input->KeyDown(VK_OEM_6)) {  // tecla '['
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationZ(angle * timeDelta))
+                XMMatrixMultiply(XMMatrixRotationZ(angle * timeDelta), XMLoadFloat4x4(&obj.world))
             );
         }
         if (input->KeyDown(VK_OEM_5)) {  // tecla ']'
             XMStoreFloat4x4(
                 &obj.world,
-                XMMatrixMultiply(XMLoadFloat4x4(&obj.world), XMMatrixRotationZ(-angle * timeDelta))
+                XMMatrixMultiply(XMMatrixRotationZ(-angle * timeDelta), XMLoadFloat4x4(&obj.world))
             );
         }
     }
