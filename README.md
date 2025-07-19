@@ -1,4 +1,4 @@
--banner-
+<img width="2500" height="587" alt="BasiCAD Banner" src="https://github.com/user-attachments/assets/36da34cd-57e4-4566-bfdd-b6900b62aaaf" />
 
 **BasiCAD** is a simple 3D CAD program written in C++ using the Direct3D API. This system was created as the second assignment for the course Computer Graphics at the Universidade Federal Rural do Semi-Árido.
 
@@ -31,19 +31,19 @@ To use BasiCAD, follow these steps:
 ## Usage
 The application will start with a grid in the center of the screen.
 
-- start image -
+<img width="1284" height="938" alt="image" src="https://github.com/user-attachments/assets/51a1f49e-41a1-4fde-9340-0ad065889c20" />
 
-You can add shapes using the keyboard shortcuts listed on the Controls section below. The camera can be manipulated using the mouse and keyboard controls.
+You can add and manipulate shapes using the keyboard shortcuts listed on the Controls section below. The camera can be manipulated using the mouse controls.
 
-- scene example -
+<img width="1280" height="936" alt="image" src="https://github.com/user-attachments/assets/2794be0d-92eb-4feb-bdac-1bbfa571d1cf" />
 
 If you need a 4 views mode, you can toggle it with the `V` key.
 
-- 4 views mode -
+<img width="1283" height="942" alt="image" src="https://github.com/user-attachments/assets/05320992-b8bf-4bb2-a158-bb552ae12ffd" />
 
 The application also supports loading .obj files from the Resources folder using the number keys `1 - 6`.
 
-- loaded obj example -
+<img width="1286" height="937" alt="image" src="https://github.com/user-attachments/assets/37a57fa8-fbee-40df-b793-005eb9e10544" />
 
 ### Controls
 - **Mouse Controls:**
